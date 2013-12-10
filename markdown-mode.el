@@ -4184,7 +4184,7 @@ Standalone XHTML output is identified by an occurrence of
           "iso-8859-1"))))
   (if (> (length markdown-css-path) 0)
       (insert "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\""
-              markdown-css-path
+              (concat "file://" (expand-file-name markdown-css-path))
               "\"  />\n"))
   (when (> (length markdown-xhtml-header-content) 0)
     (insert markdown-xhtml-header-content))
