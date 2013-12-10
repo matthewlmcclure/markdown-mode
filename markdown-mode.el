@@ -4136,9 +4136,9 @@ Insert the output in the buffer named OUTPUT-BUFFER-NAME."
   (setq output-buffer-name (markdown output-buffer-name))
   (with-current-buffer output-buffer-name
     (set-buffer output-buffer-name)
-    (goto-char (point-min))
     (unless (markdown-output-standalone-p)
       (markdown-add-xhtml-header-and-footer output-buffer-name))
+    (goto-char (point-min))
     (html-mode))
   output-buffer-name)
 
@@ -4153,10 +4153,12 @@ that name."
   "Determine whether `markdown-command' output is standalone XHTML.
 Standalone XHTML output is identified by an occurrence of
 `markdown-xhtml-standalone-regexp' in the first five lines of output."
-  (re-search-forward
-   markdown-xhtml-standalone-regexp
-   (save-excursion (goto-char (point-min)) (forward-line 4) (point))
-   t))
+  (save-excursion
+    (goto-char (point-min))
+    (re-search-forward
+     markdown-xhtml-standalone-regexp
+     (save-excursion (goto-char (point-min)) (forward-line 4) (point))
+     t)))
 
 (defun markdown-add-xhtml-header-and-footer (title)
   "Wrap XHTML header and footer with given TITLE around current buffer."
@@ -4182,7 +4184,7 @@ Standalone XHTML output is identified by an occurrence of
           "iso-8859-1"))))
   (if (> (length markdown-css-path) 0)
       (insert "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\""
-              markdown-css-path
+              (concat "file://" (expand-file-name markdown-css-path))
               "\"  />\n"))
   (when (> (length markdown-xhtml-header-content) 0)
     (insert markdown-xhtml-header-content))
@@ -4198,7 +4200,7 @@ Standalone XHTML output is identified by an occurrence of
 When OUTPUT-BUFFER-NAME is given, insert the output in the buffer with
 that name."
   (interactive)
-  (browse-url-of-buffer (markdown markdown-output-buffer-name)))
+  (browse-url-of-buffer (markdown-standalone markdown-output-buffer-name)))
 
 (defun markdown-export-file-name (&optional extension)
   "Attempt to generate a filename for Markdown output.
